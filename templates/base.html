@@ -40,12 +40,24 @@
               <a class="nav-link" href="/about">About Us</a>
             </li>
             {%if user.is_authenticated%}
+            {% if not user.is_staff %}
             <li class="nav-item active">
               <a class="nav-link" href="/vehicles">Vehicles</a>
             </li>
             <li class="nav-item active">
+              <a class="nav-link" href="/manage_cars">Manage Cars</a>
+            </li>
+            {% endif %}
+            {% if user.is_staff %}
+            <li class="nav-item active">
+              <a class="nav-link" href="/manage_orders">Manage Orders</a>
+            </li>
+            {% endif %}
+            {% if not user.is_staff %}
+            <li class="nav-item active">
               <a class="nav-link" href="/contact">Contact</a>
             </li>
+            {% endif %}
             <li class="nav-item active">
               <a class="nav-link" href="/signout">Log Out</a>
             </li>
@@ -64,16 +76,7 @@
         </div>
     </nav>
     {% block body %} {% endblock body %}
-      <!-- Footer -->
-<footer class="page-footer-text-center font-small blue mx-5" >
-
-  <!-- Copyright -->
-  <div class="footer-copyright text-center py-3">© 2022 Copyright: CarZest
-  </div>
-  <!-- Copyright -->
-
-</footer>
-<!-- Footer -->
+    
 </div>
     </body>
 </html>

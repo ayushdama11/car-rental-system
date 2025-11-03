@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Orders{% endblock title %}
+
+{% block body %}
+<div class="container my-4">
+    <h2 class="text-center mb-4">Manage Customer Orders</h2>
+    
+    {% if user.is_authenticated and user.is_staff %}
+        {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Car</th>
+                            <th>Booking Date</th>
+                            <th>Days</th>
+                            <th>Status</th>
+                            <th>Issue Reported</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.name }}<br><small>{{ order.email }}</small></td>
+                            <td>{{ order.cars }}</td>
+                            <td>{{ order.date }}</td>
+                            <td>{{ order.days_for_rent }}</td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge badge-warning">Pending</span>
+                                {% elif order.status == 'approved' %}
+                                    <span class="badge badge-success">Approved</span>
+                                {% elif order.status == 'declined' %}
+                                    <span class="badge badge-danger">Declined</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.issue_reported %}
+                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#viewIssueModal{{ order.order_id }}">
+                                        View Issue
+                                    </button>
+                                {% else %}
+                                    <span class="text-muted">None</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <div class="btn-group" role="group">
+                                        <a href="/update_order_status/{{ order.order_id }}/approved" class="btn btn-success btn-sm">Approve</a>
+                                        <a href="/update_order_status/{{ order.order_id }}/declined" class="btn btn-danger btn-sm">Decline</a>
+                                    </div>
+                                {% else %}
+                                    <a href="/update_order_status/{{ order.order_id }}/pending" class="btn btn-secondary btn-sm">Reset Status</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        
+                        <!-- Modal for viewing issues -->
+                        {% if order.issue_reported %}
+                        <div class="modal fade" id="viewIssueModal{{ order.order_id }}" tabindex="-1" role="dialog" aria-labelledby="viewIssueModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewIssueModalLabel">Issue Report for Order #{{ order.order_id }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Customer:</strong> {{ order.name }}</p>
+                                        <p><strong>Car:</strong> {{ order.cars }}</p>
+                                        <p><strong>Issue Description:</strong></p>
+                                        <div class="alert alert-warning">
+                                            {{ order.issue_reported }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <p>There are no orders in the system.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-danger text-center">
+            <p>You do not have permission to access this page.</p>
+            <a href="/home" class="btn btn-primary mt-2">Return to Home</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock body %}

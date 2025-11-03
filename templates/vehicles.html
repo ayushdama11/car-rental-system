@@ -6,14 +6,37 @@
 <link rel="stylesheet" href="{%static 'style.css'%}">
 
 {% block body %}
- 
 
-<main role="main" style="background-color: rgb(200, 200, 200)">
+<style>
+  .card {
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+  }
+  .card:hover img {
+    transform: scale(1.05);
+  }
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+</style>
 
-    <section class="jumbotron text-center" style="background-color: rgb(200, 200, 200)">
+<main role="main" style="background-color: rgb(240, 240, 240)">
+
+    <section class="jumbotron text-center" style="background-color: rgb(240, 240, 240); padding: 3rem 0;">
       <div class="container">
-        <h1 class="jumbotron-heading" style="font-size:50px">Welcome {{request.user}} !!</h1>
-       <p style="font-size:25px; margin-top:30px">Get wide varieties of cars in affordable prices!!</p>
+        <h1 class="jumbotron-heading" style="font-size:50px; color:#333;">Welcome {{request.user}} !!</h1>
+       <p style="font-size:25px; margin-top:30px; color:#555;">Get wide varieties of cars in affordable prices!!</p>
         <p>
           
           
@@ -27,31 +50,48 @@
         <div class="row" id="3">
           {% for i in car %}
           <div class="col-md-4">
-            
-            <div class="card mb-4 shadow-sm">
-              
+            <div class="card mb-4 shadow-sm h-100 border-0 rounded-lg overflow-hidden hover-shadow">
               {%load static%}
-              <img src = '/media/{{i.image}}'  alt="car" class="d-block w-100" height="225" >
-              <div class="card-body">
-                
-                
-                <h4 style="text-align:center" >{{i.car_name}}</h4>
-                
-                <p class="card-text">{{i.car_desc}}</p>
-                <p id="{{i.car_id}}">Price per Day : {{i.price}}</p>
-               
-                <div class="d-flex justify-content-between align-items-center" id="7">
-                  <div class="btn-group" id="8">
-                    <a type="button" class="btn btn-sm btn-dark " href="\bill" id="rentbtn">RENT</a>
-                   
+              <div class="card-img-container" style="overflow: hidden; height: 200px;">
+                <img src='/media/{{i.image}}' alt="car" class="card-img-top" style="object-fit: cover; height: 100%; width: 100%; transition: transform 0.3s;">
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h4 class="card-title text-center font-weight-bold mb-3">{{i.car_name}}</h4>
+                <div class="card-text flex-grow-1">
+                  <div class="feature-list">{{ i.car_desc|striptags }}</div>
+                </div>
+
+                <script>
+                  (function() {
+                    const featureLists = document.querySelectorAll('.feature-list');
+                    featureLists.forEach(list => {
+                      if (list.dataset.processed === '1') return;
+                      const raw = (list.textContent || '').trim();
+                      // Split on common separators and normalize spacing
+                      const items = raw
+                        .split(/\s*(?:;;|::|;|\n|\r)\s*/)
+                        .map(s => s.replace(/\s*:\s*/g, ': ').replace(/\s{2,}/g, ' ').trim())
+                        .filter(Boolean);
+
+                      if (items.length > 0) {
+                        list.innerHTML = items.map(f => `<div class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> ${f}</div>`).join('');
+                      } else {
+                        const cleaned = raw.replace(/\s*:\s*/g, ': ').replace(/\s{2,}/g, ' ').trim();
+                        list.innerHTML = cleaned ? `<div class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> ${cleaned}</div>` : '';
+                      }
+                      list.dataset.processed = '1';
+                    });
+                  })();
+                </script>
+                <div class="mt-auto">
+                  <p class="font-weight-bold text-primary" id="{{i.car_id}}">₹{{i.price}} <span class="text-muted font-weight-normal">per day</span></p>
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a type="button" class="btn btn-primary btn-block" href="\bill" id="rentbtn">RENT NOW</a>
                   </div>
-                  
                 </div>
               </div>
             </div>
-            
           </div>
-          
           {%endfor%}
           
 

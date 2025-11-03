@@ -10,12 +10,11 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("signin", views.signin, name="signin"),
     path("signout",views.signout,name = "signout"),
-    path("bill",views.order,name = "bill"),
+    path("bill",views.bill,name = "bill"),
+    path("order",views.order,name = "order"),
     path("contact",views.contact,name = 'contact'),
-    # path("vehicles",views.Order,name = 'vehicles'),
-    # path("bike",views.bike,name = 'bike'),
-    # path("bus",views.bus,name = 'bus'),
-    
-    # path("bill", views.bill, name="bill"),
-
+    path("manage_cars", views.manage_cars, name="manage_cars"),
+    path("report_issue/<int:order_id>", views.report_issue, name="report_issue"),
+    path("manage_orders", views.manage_orders, name="manage_orders"),
+    path("update_order_status/<int:order_id>/<str:status>", views.update_order_status, name="update_order_status"),
     ]

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Cars{% endblock title %}
+
+{% block body %}
+<div class="container my-4">
+    <h2 class="text-center mb-4">Manage Your Car Bookings</h2>
+    
+    {% if user.is_authenticated %}
+        {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Car</th>
+                            <th>Booking Date</th>
+                            <th>Days</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.cars }}</td>
+                            <td>{{ order.date }}</td>
+                            <td>{{ order.days_for_rent }}</td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge badge-warning">Pending</span>
+                                {% elif order.status == 'approved' %}
+                                    <span class="badge badge-success">Approved</span>
+                                {% elif order.status == 'declined' %}
+                                    <span class="badge badge-danger">Declined</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#reportIssueModal{{ order.order_id }}">
+                                    Report Issue
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Modal for reporting issues -->
+                        <div class="modal fade" id="reportIssueModal{{ order.order_id }}" tabindex="-1" role="dialog" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="reportIssueModalLabel">Report Issue for {{ order.cars }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form action="/report_issue/{{ order.order_id }}" method="post">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="issue">Describe the issue:</label>
+                                                <textarea class="form-control" id="issue" name="issue" rows="4" required>{{ order.issue_reported|default:'' }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Submit Report</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <p>You haven't booked any cars yet.</p>
+                <a href="/vehicles" class="btn btn-primary mt-2">Browse Available Cars</a>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-warning text-center">
+            <p>Please log in to view your bookings.</p>
+            <a href="/signin" class="btn btn-primary mt-2">Login</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock body %}
